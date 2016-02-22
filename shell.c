@@ -79,6 +79,8 @@ bool isBuiltInCommand(struct cmdInfo *cmd)
 					return TRUE;
 		 } else if (strcmp(program, "exit") == 0) {
 					return TRUE;
+		 } else if (strcmp(program, "history") == 0) {
+					return TRUE;
 		 }
 		 return FALSE;
 }
@@ -130,12 +132,13 @@ void printError(int err)
 
 int addCommandToHistory(char **historyAddress, char *commandToStore, int *index) {
 		 historyAddress[*index] = malloc(strlen(commandToStore)*sizeof(char));
-		 strcpy(historyAddress[*index++], commandToStore);
+		 strcpy(historyAddress[*index], commandToStore);
+		 *index = *index+1;
 		 return 0;
 }
 
 void printHistory(char **historyAddress, int index) {
 		 for (int i=0; i<index; i++) {
-					printf("%d: %s", i, historyAddress[i%1000]);
+					printf("%d: %s\n", i, historyAddress[i%1000]);
 		 }
 }
