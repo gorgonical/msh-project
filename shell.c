@@ -9,10 +9,13 @@
 int main(int argc, char *argv[])
 {
 		 char workDir[150];
-		 char *prompt;
+		 char *prompt = malloc(7*sizeof(char));
 		 char *origPrompt; // We need to rebuild the pwd bit each time.
 		 // Simple defaults for prompt. Maybe consider using a struct to store the info?
-		 strcpy(prompt, "[msh] ");
+		 char **history = malloc(1000*sizeof(char *));
+		 int historyIndex = 0;
+		 
+		 strcpy(prompt, "[msh]: ");
 		 origPrompt = strdup(prompt);
 
 		 struct cmdInfo *shellInfo = malloc(sizeof(struct cmdInfo));
@@ -30,10 +33,18 @@ int main(int argc, char *argv[])
 					}
 					
 					shellInfo = parse(cmdLine);
+					addCommandToHistory(history, cmdLine, &historyIndex);
 					free(cmdLine);
 					
 					if (isBuiltInCommand(shellInfo) == TRUE) {
-							 executeBuiltIn(shellInfo);
+							 int historyOrNot = executeBuiltIn(shellInfo);
+							 switch (historyOrNot) {
+							 case 2:
+										printHistory(history, historyIndex);
+										break;
+							 default:
+										;
+							 }
 					} else {
 							 
 							 pid_t childPid = fork();
@@ -80,6 +91,9 @@ int executeBuiltIn(struct cmdInfo *cmd)
 					} else {
 							 printError(errno);
 					}					 
+		 } else if (strcmp(cmd->commandTokens[0], "history") == 0) {
+					return 2;
+					
 		 } else if (strcmp(cmd->commandTokens[0], "exit") == 0) {
 					exit(0);
 		 }
@@ -111,5 +125,17 @@ void printError(int err)
 					printf("EFAULT error.\n"); break;
 		 default:
 					printf("Error number: %d", errno);
+		 }
+}
+
+int addCommandToHistory(char **historyAddress, char *commandToStore, int *index) {
+		 historyAddress[*index] = malloc(strlen(commandToStore)*sizeof(char));
+		 strcpy(historyAddress[*index++], commandToStore);
+		 return 0;
+}
+
+void printHistory(char **historyAddress, int index) {
+		 for (int i=0; i<index; i++) {
+					printf("%d: %s", i, historyAddress[i%1000]);
 		 }
 }

@@ -39,16 +39,21 @@ struct cmdInfo *parse(char *commandLine)
 		 char *token = strtok(commandDup, " "); // The strtok buffer
 		 while (token) {
 					//info->commandTokens[i] = (char*)malloc(50*sizeof(char)); //initialize this token's array
+					info->commandTokens[i] = malloc (strlen(token)*sizeof(char));
 					strcpy (info->commandTokens[i++], token);
 					if (strcmp(token, "<")==0) {
-							 info->inpipe = malloc(50*sizeof(char));
+							 //info->inpipe = malloc(50*sizeof(char));
 							 token = strtok( NULL, " ");
+							 info->inpipe = malloc(strlen(token)*sizeof(char));
+							 info->commandTokens[i] = malloc (strlen(token)*sizeof(char));
 							 strcpy (info->commandTokens[i++], token);
 							 strcpy (info->inpipe, token);
 					}
 					if (strcmp(token, ">")==0) {
-							 info->output = malloc(50*sizeof(char));
+							 //info->output = malloc(50*sizeof(char));
 							 token = strtok( NULL, " ");
+							 info->output = malloc(strlen(token)*sizeof(char));
+							 info->commandTokens[i] = malloc (strlen(token)*sizeof(char));
 							 strcpy (info->commandTokens[i++], token);
 							 strcpy (info->output, token);
 					}

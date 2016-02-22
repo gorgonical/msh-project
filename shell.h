@@ -17,8 +17,9 @@ struct cmdInfo
 		 char *inpipe;
 		 char *output;
 		 bool background;
-		 char (*commandTokens)[50];
-		 int numArgs;
+		 // char (*commandTokens)[50];
+		 char **commandTokens;
+		 int numArgs;		 
 };
 
 // Parser.c
@@ -32,3 +33,5 @@ bool isBuiltInCommand(struct cmdInfo *cmd);
 int executeBuiltIn(struct cmdInfo *cmd);
 void printError(int err);
 int executeCommand(struct cmdInfo *cmd);
+int addCommandToHistory(char **historyAddress, char *commandToStore, int *index);
+void printHistory(char **historyAddress, int index);
