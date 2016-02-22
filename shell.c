@@ -35,15 +35,15 @@ int main(int argc, char *argv[])
 					shellInfo = parse(cmdLine);
 					addCommandToHistory(history, cmdLine, &historyIndex);
 					free(cmdLine);
-					
-					if (isBuiltInCommand(shellInfo) == TRUE) {
-							 int historyOrNot = executeBuiltIn(shellInfo);
-							 switch (historyOrNot) {
+
+					int specialFunc = isBuiltInCommand(shellInfo);
+					if (specialFunc != -1) {
+							 switch (specialFunc) {
 							 case 2:
 										printHistory(history, historyIndex);
 										break;
 							 default:
-										;
+										executeBuiltIn(shellInfo);
 							 }
 					} else {
 							 
@@ -72,17 +72,34 @@ int main(int argc, char *argv[])
 		 free(prompt);
 }
 
-bool isBuiltInCommand(struct cmdInfo *cmd)
+/* bool isBuiltInCommand(struct cmdInfo *cmd) */
+/* { */
+/* 		 char *program = cmd->commandTokens[0]; */
+/* 		 if (strcmp(program, "cd") == 0) { */
+/* 					return TRUE; */
+/* 		 } else if (strcmp(program, "exit") == 0) { */
+/* 					return TRUE; */
+/* 		 } else if (strcmp(program, "history") == 0) { */
+/* 					return TRUE; */
+/* 		 } else if (if program[0] == '!') { */
+/* 					return TRUE; */
+/* 		 } */
+/* 		 return FALSE; */
+/* } */
+
+int isBuiltInCommand(struct cmdInfo *cmd)
 {
 		 char *program = cmd->commandTokens[0];
 		 if (strcmp(program, "cd") == 0) {
-					return TRUE;
+					return 0;
 		 } else if (strcmp(program, "exit") == 0) {
-					return TRUE;
+					return 1;
 		 } else if (strcmp(program, "history") == 0) {
-					return TRUE;
+					return 2;
+		 } else if (program[0] == '!') {
+					return 3;
 		 }
-		 return FALSE;
+		 return -1;
 }
 
 int executeBuiltIn(struct cmdInfo *cmd)
@@ -93,9 +110,6 @@ int executeBuiltIn(struct cmdInfo *cmd)
 					} else {
 							 printError(errno);
 					}					 
-		 } else if (strcmp(cmd->commandTokens[0], "history") == 0) {
-					return 2;
-					
 		 } else if (strcmp(cmd->commandTokens[0], "exit") == 0) {
 					exit(0);
 		 }

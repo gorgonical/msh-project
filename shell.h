@@ -29,7 +29,7 @@ struct cmdInfo *parse(char *commandLine);
 void print_info(struct cmdInfo *cmdInformation);
 
 // Shell.c
-bool isBuiltInCommand(struct cmdInfo *cmd);
+int isBuiltInCommand(struct cmdInfo *cmd);
 int executeBuiltIn(struct cmdInfo *cmd);
 void printError(int err);
 int executeCommand(struct cmdInfo *cmd);
