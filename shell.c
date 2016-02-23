@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 		 // Simple defaults for prompt. Maybe consider using a struct to store the info?
 		 char **history = malloc(1000*sizeof(char *));
 		 int historyIndex = 0;
+		 int specialFunc = 0;
 		 
 		 strcpy(prompt, "[msh]: ");
 		 origPrompt = strdup(prompt);
@@ -36,12 +37,17 @@ int main(int argc, char *argv[])
 					addCommandToHistory(history, cmdLine, &historyIndex);
 					free(cmdLine);
 
-					int specialFunc = isBuiltInCommand(shellInfo);
+					executeBlock:
+					specialFunc = isBuiltInCommand(shellInfo);
 					if (specialFunc != -1) {
 							 switch (specialFunc) {
 							 case 2:
 										printHistory(history, historyIndex);
 										break;
+							 case 3:
+										runCommandFromHistory(shellInfo, history);
+										goto executeBlock;
+										// We need to 'restart' command execution, and a goto is the easiest way, having changed the shell string
 							 default:
 										executeBuiltIn(shellInfo);
 							 }
@@ -71,21 +77,6 @@ int main(int argc, char *argv[])
 		 free(origPrompt);
 		 free(prompt);
 }
-
-/* bool isBuiltInCommand(struct cmdInfo *cmd) */
-/* { */
-/* 		 char *program = cmd->commandTokens[0]; */
-/* 		 if (strcmp(program, "cd") == 0) { */
-/* 					return TRUE; */
-/* 		 } else if (strcmp(program, "exit") == 0) { */
-/* 					return TRUE; */
-/* 		 } else if (strcmp(program, "history") == 0) { */
-/* 					return TRUE; */
-/* 		 } else if (if program[0] == '!') { */
-/* 					return TRUE; */
-/* 		 } */
-/* 		 return FALSE; */
-/* } */
 
 int isBuiltInCommand(struct cmdInfo *cmd)
 {
@@ -155,4 +146,18 @@ void printHistory(char **historyAddress, int index) {
 		 for (int i=0; i<index; i++) {
 					printf("%d: %s\n", i, historyAddress[i%1000]);
 		 }
+}
+
+void runCommandFromHistory(struct cmdInfo *commandStruct, char **history) {
+		 int numChars = strlen(commandStruct->commandTokens[0]);
+		 char *indexAsString = malloc(sizeof(char)*numChars);
+		 memcpy(indexAsString, commandStruct->commandTokens[0]+1, numChars-1); 
+		 int index = atoi(indexAsString);
+
+		 struct cmdInfo *tempCmd = malloc(sizeof(struct cmdInfo));
+		 init_info(tempCmd);
+
+		 
+		 tempCmd = parse(history[index]);
+		 *commandStruct = *tempCmd;
 }
