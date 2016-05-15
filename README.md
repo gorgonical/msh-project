@@ -1,0 +1,1 @@
+This is a project inspired by Cornell's CS414 operating systems course. This is the shell component, written entirely from scratch and as of 05/15/2016 no outside source code from existing shells has been referenced.
