@@ -36,3 +36,4 @@ int executeCommand(struct cmdInfo *cmd);
 int addCommandToHistory(char **historyAddress, char *commandToStore, int *index);
 void printHistory(char **historyAddress, int index);
 void runCommandFromHistory(struct cmdInfo *commandStruct, char **history);
+void makePrompt(char *promptBuf, char *origPrompt);

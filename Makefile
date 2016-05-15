@@ -1,6 +1,7 @@
 CFLAGS=
 DEBUG=-g
-LINKLIBS=-lreadline -lcurses
+CC=clang
+LINKLIBS=-lreadline -lncurses
 
 all: shell
 

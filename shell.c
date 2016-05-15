@@ -21,12 +21,9 @@ int main(int argc, char *argv[])
 
 		 struct cmdInfo *shellInfo = malloc(sizeof(struct cmdInfo));
 		 init_info(shellInfo);
-		 while(1) {
-					
-					strcpy(prompt, origPrompt);
-					getcwd(workDir, sizeof(workDir));
-					strcat(prompt, workDir);
-					strcat(prompt, ": ");
+		 while(1) {				 
+
+					makePrompt(prompt, origPrompt);
 					
 					char *cmdLine = readline((const char *)prompt);
 					if (strcmp(cmdLine, "") == 0) { // Skip empty lines
@@ -52,7 +49,7 @@ int main(int argc, char *argv[])
 										executeBuiltIn(shellInfo);
 							 }
 					} else {
-							 
+							 /* The case where we are executing a real command */
 							 pid_t childPid = fork();
 							 pid_t wpid;
 							 int status;
@@ -64,6 +61,7 @@ int main(int argc, char *argv[])
 												 ;
 										} else {
 												 do {
+															/* Wait on the child process to finish, indicating we should have control again. */
 															wpid = waitpid(childPid, &status, WUNTRACED);
 												 } while (!WIFEXITED(status) && !WIFSIGNALED(status));
 										}
@@ -160,4 +158,14 @@ void runCommandFromHistory(struct cmdInfo *commandStruct, char **history) {
 		 
 		 tempCmd = parse(history[index]);
 		 *commandStruct = *tempCmd;
+}
+
+void makePrompt(char *promptBuf, char *origPrompt)
+{
+		 char *cwd = get_current_dir_name();
+		 /* getcwd(cwd, 0); */
+		 strcpy(promptBuf, origPrompt);
+		 strcat(promptBuf, cwd);
+		 strcat(promptBuf, ": ");
+		 free(cwd);
 }
